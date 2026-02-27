@@ -1,6 +1,6 @@
 # Bizus
 
-<small>Commit de referencia: `2d44f2a`</small>
+<small>Commit de referencia: `2daaa70`</small>
 
 ## Setup do HP
 
@@ -259,3 +259,51 @@ ou
 ```
 
 *******************************************
+
+## Opções para limpar ou controlar o histórico
+
+- **Limpar o histórico atual da sessão**  
+
+  Use:
+
+  ```bash
+  history -c
+  ```
+
+  Isso limpa o histórico da sessão atual do shell.  
+  Se quiser garantir que não seja salvo no arquivo `~/.bash_history`, rode também:
+
+  ```bash
+  history -c && history -w
+  ```
+
+  (`-w` sobrescreve o arquivo de histórico com o que restou — no caso, nada).
+
+- **Apagar manualmente o arquivo de histórico**  
+
+  ```bash
+  > ~/.bash_history
+  ```
+
+  Isso zera o arquivo onde os comandos são guardados.
+
+- **Evitar salvar comandos críticos**  
+
+  Antes de rodar algo sensível, você pode desativar temporariamente o histórico:
+
+  ```bash
+  unset HISTFILE
+  ```
+
+  Assim, nada será gravado no arquivo enquanto essa variável estiver desativada.
+
+- **Bloquear gravação de um comando específico**  
+
+  Se você colocar um espaço antes do comando, ele não será salvo no histórico (desde que a opção `HISTCONTROL=ignorespace` esteja configurada, o que é comum em distribuições como Ubuntu).
+
+### Dica extra
+Se o seu medo é executar acidentalmente um comando perigoso ao navegar com a seta, você pode:
+- Usar **Ctrl+R** para buscar comandos específicos em vez de navegar com setas.
+- Configurar **aliases** para comandos críticos, exigindo confirmação (por exemplo, transformar `rm` em `rm -i`).
+
+Quer que eu te mostre como configurar o Bash para nunca salvar certos comandos críticos no histórico, mesmo que você os execute?

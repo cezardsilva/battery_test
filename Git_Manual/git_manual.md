@@ -1,6 +1,6 @@
 # Guia de Git
 
-<small>Commit de referencia: `2d44f2a`</small>
+<small>Commit de referencia: `2daaa70`</small>
 
 ## Indice
 
