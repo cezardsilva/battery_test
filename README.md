@@ -88,6 +88,11 @@ Temporário (sessão atual):
 export RCLONE_REMOTE=gdrive
 ```
 
+Se `RCLONE_REMOTE` não estiver definido, o `./uc` tenta escolher automaticamente nesta ordem:
+1. `gdrive`
+2. `bizu`
+3. único remote disponível
+
 Permanente:
 
 ```bash

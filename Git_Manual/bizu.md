@@ -1,6 +1,6 @@
 # Bizus
 
-<small>Commit de referencia: `2daaa70`</small>
+<small>Commit de referencia: `0f02757`</small>
 
 ## Setup do HP
 

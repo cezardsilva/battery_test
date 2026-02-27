@@ -59,11 +59,17 @@ if [[ -z "$REMOTE" ]]; then
   mapfile -t remotes < <(rclone listremotes 2>/dev/null | sed 's/:$//')
   if [[ "${#remotes[@]}" -eq 1 ]]; then
     REMOTE="${remotes[0]}"
+  elif printf '%s\n' "${remotes[@]}" | grep -qx "gdrive"; then
+    REMOTE="gdrive"
+  elif printf '%s\n' "${remotes[@]}" | grep -qx "bizu"; then
+    REMOTE="bizu"
   else
     echo "Google Drive: defina RCLONE_REMOTE (ex.: export RCLONE_REMOTE=gdrive). Sync ignorado."
     exit 0
   fi
 fi
+
+echo "Google Drive: usando remote '$REMOTE'"
 
 for doc in "${DOCS[@]}"; do
   IFS=':' read -r local_file remote_name <<< "$doc"
