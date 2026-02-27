@@ -96,13 +96,75 @@ Se o branch principal for `master`:
 git push -u origin master
 ```
 
-### Autenticação via token (HTTPS)
+### Autenticação no GitHub (HTTPS + PAT e SSH)
 
-Ao usar HTTPS, substitua a senha por um Personal Access Token criado em:
+Esse erro acontece porque o GitHub nao aceita mais autenticacao por senha em operacoes de `git push`.
+Agora e necessario usar **Personal Access Token (PAT)** ou **chaves SSH**.
 
-`Settings > Developer Settings > Personal Access Tokens`
+Aqui estao os dois metodos mais comuns:
 
-Nunca compartilhe seu token.
+#### Metodo 1: HTTPS com Personal Access Token
+
+1. Crie um token no GitHub:
+   - Va em **Settings > Developer settings > Personal access tokens > Tokens (classic)**.
+   - Clique em **Generate new token**.
+   - Marque permissoes como `repo` (para acesso a repositorios).
+   - Copie o token gerado.
+
+2. Configure o Git para usar seu usuario e email:
+
+```bash
+git config --global user.name "seu-usuario-github"
+git config --global user.email "seu-email@exemplo.com"
+```
+
+3. Ao fazer `git push`, use o token no lugar da senha:
+
+```bash
+git push -u origin main
+```
+
+Quando pedir usuario, use seu **username do GitHub**.
+Quando pedir senha, cole o **token**.
+
+#### Metodo 2: SSH (mais pratico a longo prazo)
+
+1. Gere uma chave SSH:
+
+```bash
+ssh-keygen -t ed25519 -C "seu-email@exemplo.com"
+```
+
+(pressione Enter para aceitar os padroes).
+
+2. Adicione a chave ao agente SSH:
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+```
+
+3. Copie a chave publica:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Cole esse conteudo em **GitHub > Settings > SSH and GPG keys > New SSH key**.
+
+4. Troque o remote para usar SSH:
+
+```bash
+git remote set-url origin git@github.com:cezardsilva/battery_test.git
+```
+
+5. Agora o push funciona sem pedir senha:
+
+```bash
+git push -u origin main
+```
+
+Recomendacao: prefira SSH se voce vai trabalhar bastante com GitHub, porque evita digitar token com frequencia.
 
 ## Fluxo diário básico
 
