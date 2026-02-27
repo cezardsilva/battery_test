@@ -4,12 +4,13 @@ Projeto com utilitários locais para:
 
 - visualizar arquivos Markdown no navegador (`index.html`);
 - registrar tempo de bateria com interface Tkinter (`battery_test.py`);
-- manter o manual Git em `Git_Manual/git_manual.md` com referência automática de commit e sincronização opcional no Google Drive (`./uc`).
+- manter os guias em `Git_Manual/git_manual.md` e `Git_Manual/bizu.md` com referência automática de commit e sincronização opcional no Google Drive (`./uc`).
 
 ## Estrutura
 
 - `index.html`: visualizador Markdown com busca, destaque, botão de copiar blocos de código e impressão em PDF.
 - `Git_Manual/git_manual.md`: manual de Git mantido no projeto.
+- `Git_Manual/bizu.md`: anotações técnicas ("bizus") mantidas no projeto.
 - `battery_test.py`: cronômetro para teste de bateria com persistência em `tempo_bateria.txt`.
 - `uc`: script para atualizar o commit de referência no manual e enviar cópia para Google Drive.
 
@@ -24,10 +25,15 @@ Execute na raiz do projeto:
 O script:
 
 1. lê o commit atual (`git rev-parse --short HEAD`);
-2. atualiza a linha logo abaixo do título em `Git_Manual/git_manual.md`:
+2. atualiza a linha logo abaixo do título em:
+   - `Git_Manual/git_manual.md`
+   - `Git_Manual/bizu.md`
+3. usa o formato:
    `<small>Commit de referencia: \`HASH\`</small>`;
-3. remove duplicações dessa linha no topo do arquivo;
-4. tenta enviar o manual para a pasta do Google Drive configurada no script.
+4. remove duplicações dessa linha no topo dos arquivos;
+5. tenta enviar para a pasta do Google Drive configurada no script, com nomes:
+   - `git_manual.md`
+   - `bizu.mb` (destino no Drive)
 
 Se o `rclone` não estiver instalado/configurado, ele mantém apenas a atualização local.
 
@@ -99,7 +105,9 @@ Saída esperada (exemplo):
 
 ```text
 Atualizado: /home/cezar/leitor_markdown/Git_Manual/git_manual.md -> abc1234
+Atualizado: /home/cezar/leitor_markdown/Git_Manual/bizu.md -> abc1234
 Google Drive: arquivo atualizado em gdrive,root_folder_id=...:git_manual.md
+Google Drive: arquivo atualizado em gdrive,root_folder_id=...:bizu.mb
 ```
 
 ## Observações
