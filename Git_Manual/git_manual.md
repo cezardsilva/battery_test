@@ -14,6 +14,8 @@
 - [Quando usar git apply vs git am](#quando-usar-git-apply-vs-git-am)
 - [Erros comuns ao aplicar patch](#erros-comuns-ao-aplicar-patch)
 - [Resolucao de conflitos](#resolucao-de-conflitos)
+- [Atualizar pasta local sem perder acrescimos](#atualizar-pasta-local-sem-perder-acrescimos)
+- [Trabalhar no mesmo repositorio em duas maquinas](#trabalhar-no-mesmo-repositorio-em-duas-maquinas)
 - [Recuperacao e reversao](#recuperacao-e-reversao)
 - [Historico e diagnostico](#historico-e-diagnostico)
 - [Fluxo seguro para aplicacao de patch](#fluxo-seguro-para-aplicacao-de-patch)
@@ -352,6 +354,220 @@ Depois finalize:
 git add arquivo.xx
 git commit -m "fix: resolve conflito"
 ```
+
+## Atualizar pasta local sem perder acrescimos
+
+Situacao comum: sua pasta local pode estar desatualizada em relacao ao remoto.
+O caminho seguro e sincronizar sem perder o que voce ja fez localmente.
+
+### 1. Garanta que suas alteracoes locais estao salvas
+
+```bash
+git status
+```
+
+Se houver arquivos modificados ainda nao commitados:
+
+```bash
+git add .
+git commit -m "minhas alteracoes locais"
+```
+
+### 2. Busque as mudancas do remoto
+
+```bash
+git fetch origin
+```
+
+### 3. Integre remoto + local
+
+Opcao 1 (merge, mais simples, pode gerar commit de merge):
+
+```bash
+git merge origin/main
+```
+
+Opcao 2 (rebase, historico mais linear):
+
+```bash
+git rebase origin/main
+```
+
+### 4. Resolva conflitos (se houver)
+
+Depois de editar os arquivos em conflito:
+
+```bash
+git add <arquivo_resolvido>
+git rebase --continue   # se estiver usando rebase
+# ou
+git commit              # se estiver usando merge
+```
+
+### 5. Envie para o remoto
+
+```bash
+git push origin main
+```
+
+### Atalho util
+
+Para atualizar a branch local em um comando (fetch + rebase):
+
+```bash
+git pull --rebase origin main
+```
+
+### Erro: `fatal: refusing to merge unrelated histories`
+
+Esse erro indica que o historico local e o remoto nao possuem ancestral comum.
+Isso acontece, por exemplo, quando o repositorio local e o remoto foram iniciados separadamente.
+
+Opcao 1 (recomendada para preservar ambos os lados):
+
+```bash
+git pull origin main --allow-unrelated-histories
+```
+
+Se houver conflito, resolva os arquivos, rode `git add` e finalize com:
+
+```bash
+git commit
+```
+
+Opcao 2 (reaplicar seus commits sobre o remoto):
+
+```bash
+git fetch origin
+git rebase origin/main
+```
+
+Opcao 3 (sobrescrever o remoto com seu historico local):
+
+```bash
+git push origin main --force
+```
+
+Atencao: `--force` substitui o historico remoto. Use apenas se tiver certeza.
+
+## Trabalhar no mesmo repositorio em duas maquinas
+
+Objetivo: usar o mesmo usuario GitHub e o mesmo repositorio em dois computadores sem perder trabalho.
+
+### 1. Configure identidade nas duas maquinas
+
+Rode em cada maquina:
+
+```bash
+git config --global user.name "seu-usuario-github"
+git config --global user.email "seu-email@exemplo.com"
+```
+
+### 2. Configure autenticacao nas duas maquinas
+
+Use PAT (HTTPS) ou SSH. Para uso frequente, SSH e o mais pratico.
+
+Teste SSH:
+
+```bash
+ssh -T git@github.com
+```
+
+### 3. Clone o mesmo repositorio nas duas maquinas
+
+Na maquina 1 e na maquina 2:
+
+```bash
+git clone git@github.com:usuario/projeto.git
+cd projeto
+git branch -M main
+```
+
+### 4. Regra de ouro no dia a dia
+
+Antes de comecar a programar em qualquer maquina:
+
+```bash
+git pull --rebase origin main
+```
+
+Depois de terminar alteracoes:
+
+```bash
+git add .
+git commit -m "descricao da alteracao"
+git push origin main
+```
+
+### 5. Fluxo recomendado entre maquina 1 e maquina 2
+
+1. Maquina 1: `git pull --rebase`, trabalha, commit, `git push`.
+2. Maquina 2: antes de editar, roda `git pull --rebase` para trazer o que a maquina 1 enviou.
+3. Maquina 2: trabalha, commit, `git push`.
+4. Maquina 1: antes de novo ciclo, roda `git pull --rebase`.
+
+### 6. Se o push for rejeitado
+
+Quando aparecer erro de branch desatualizada (non-fast-forward), rode:
+
+```bash
+git pull --rebase origin main
+```
+
+Resolva conflitos se houver, finalize com:
+
+```bash
+git add <arquivo_resolvido>
+git rebase --continue
+git push origin main
+```
+
+### 7. Boas praticas para evitar conflito
+
+- Sempre fazer `pull --rebase` antes de iniciar trabalho.
+- Evitar editar os mesmos arquivos ao mesmo tempo nas duas maquinas.
+- Fazer commits pequenos e frequentes.
+- Nao usar `git push --force` na `main` (exceto caso muito controlado).
+
+### 8. Fluxo alternativo: uma branch por maquina
+
+Esse fluxo reduz conflitos na `main` quando voce alterna entre computadores.
+
+Exemplo de branches:
+- Maquina 1: `feature/notebook`
+- Maquina 2: `feature/desktop`
+
+Criar branch na primeira vez (em cada maquina):
+
+```bash
+git checkout main
+git pull --rebase origin main
+git checkout -b feature/notebook
+git push -u origin feature/notebook
+```
+
+No outro computador, troque para `feature/desktop` nos comandos acima.
+
+Rotina diaria em cada maquina:
+
+```bash
+git checkout feature/notebook
+git pull --rebase origin feature/notebook
+git add .
+git commit -m "descricao da alteracao"
+git push
+```
+
+Para integrar na `main` com seguranca:
+
+```bash
+git checkout main
+git pull --rebase origin main
+git merge --no-ff feature/notebook
+git push origin main
+```
+
+Repita o mesmo para `feature/desktop` quando quiser integrar o trabalho da outra maquina.
 
 ## Recuperacao e reversao
 
